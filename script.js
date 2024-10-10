@@ -14,7 +14,7 @@ class Heroi {
 
         switch (this.vocacao) {
             case "sorcerer":
-                ataque = "magia";
+                ataque = "magia de fogo";
                 dano = Math.floor(Math.random() * 11) + 15; // Dano entre 15 e 25
                 break;
             case "knight":
@@ -22,7 +22,7 @@ class Heroi {
                 dano = Math.floor(Math.random() * 11) + 20; // Dano entre 20 e 30
                 break;
             case "druid":
-                ataque = "magia de cura";
+                ataque = "magia de gelo";
                 dano = Math.floor(Math.random() * 11) + 10; // Dano entre 10 e 20
                 break;
             case "paladin":
@@ -56,6 +56,25 @@ class Heroi {
         this.vida += 10; // Ganha mais vida ao subir de nível
         log(`${this.nome} subiu para o nível ${this.level}! Vida aumentou para ${this.vida}`);
     }
+
+    // Método para curar o herói
+    curar() {
+        let cura;
+
+        switch (this.vocacao) {
+            case "druid":
+                cura = Math.floor(Math.random() * 11) + 20; // Cura entre 20 e 30 para druida
+                break;
+            case "sorcerer":
+                cura = Math.floor(Math.random() * 11) + 15; // Cura entre 15 e 25 para sorcerer
+                break;
+            default:
+                cura = Math.floor(Math.random() * 11) + 10; // Cura entre 10 e 20 para os outros
+        }
+
+        this.vida += cura;
+        log(`${this.nome} se curou e recuperou ${cura} de vida! Vida atual: ${this.vida}`);
+    }
 }
 
 // Função para adicionar log no div
@@ -71,10 +90,32 @@ function atualizarStatus(heroi1, heroi2) {
     document.getElementById('heroi2Vida').textContent = heroi2.vida;
 }
 
+// Função para escolher uma vocação aleatória
+function escolherVocacaoAleatoria() {
+    const vocacoes = ["knight", "sorcerer", "druid", "paladin"];
+    return vocacoes[Math.floor(Math.random() * vocacoes.length)];
+}
+
+// Função para criar dois heróis aleatórios com vocações diferentes
+function criarHeroisAleatorios() {
+    let vocacao1 = escolherVocacaoAleatoria();
+    let vocacao2;
+
+    // Garante que os dois heróis tenham vocações diferentes
+    do {
+        vocacao2 = escolherVocacaoAleatoria();
+    } while (vocacao1 === vocacao2);
+
+    const heroi1 = new Heroi("Arus", Math.floor(Math.random() * 10) + 15, vocacao1, 100);
+    const heroi2 = new Heroi("Zyra", Math.floor(Math.random() * 10) + 15, vocacao2, 100);
+
+    log(`Heróis selecionados aleatoriamente: ${heroi1.nome} (${heroi1.vocacao}) vs ${heroi2.nome} (${heroi2.vocacao})`);
+    return { heroi1, heroi2 };
+}
+
 // Função para iniciar a batalha
 function iniciarBatalha() {
-    const heroi1 = new Heroi("Arus", 20, "knight", 100);
-    const heroi2 = new Heroi("Zyra", 18, "sorcerer", 80);
+    const { heroi1, heroi2 } = criarHeroisAleatorios(); // Cria heróis aleatórios
     let rodada = 1;
 
     log(`Iniciando a batalha entre ${heroi1.nome} e ${heroi2.nome}!`);
@@ -100,6 +141,11 @@ function iniciarBatalha() {
             clearInterval(batalhaInterval); // Para a batalha
             document.getElementById('iniciarBatalha').disabled = false;
             return;
+        }
+
+        // Heroi 2 se cura na rodada ímpar
+        if (rodada % 2 === 1) {
+            heroi2.curar();
         }
 
         atualizarStatus(heroi1, heroi2);
