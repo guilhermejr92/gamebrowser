@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batalha de Heróis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .heroi {
+            margin: 20px 0;
+        }
+
+        .heroi h2 {
+            margin: 0;
+        }
+
+        #log {
+            margin-top: 20px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 200px;
+            overflow-y: scroll;
+        }
+
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn:disabled {
+            background-color: #ccc;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Batalha de Heróis</h1>
+
+    <div class="heroi">
+        <h2>Herói 1: <span id="heroi1Nome">Arus</span></h2>
+        <p>Nível: <span id="heroi1Level">20</span> | Vida: <span id="heroi1Vida">100</span></p>
+    </div>
+
+    <div class="heroi">
+        <h2>Herói 2: <span id="heroi2Nome">Zyra</span></h2>
+        <p>Nível: <span id="heroi2Level">18</span> | Vida: <span id="heroi2Vida">80</span></p>
+    </div>
+
+    <button id="iniciarBatalha" class="btn">Iniciar Batalha</button>
+
+    <div id="log"></div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
