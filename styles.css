@@ -1,0 +1,73 @@
+.barra-de-vida {
+    width: 100px;
+    height: 15px;
+    background-color: #ddd;
+    border: 1px solid #333;
+    position: relative;
+}
+
+.vida {
+    height: 100%;
+    background-color: green;
+    width: 100%;
+    /* Inicialmente 100% */
+}
+
+#log {
+    width: 90%;
+    height: 200px;
+    border: 1px solid #333;
+    overflow-y: scroll;
+    background-color: #f4f4f4;
+    padding: 10px;
+}
+
+.container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.heroi.tremer {
+    animation: tremer 0.5s;
+}
+
+@keyframes tremer {
+    0% {
+        transform: translate(1px, 1px);
+    }
+
+    20% {
+        transform: translate(-1px, -2px);
+    }
+
+    40% {
+        transform: translate(-3px, 0px);
+    }
+
+    60% {
+        transform: translate(3px, 2px);
+    }
+
+    80% {
+        transform: translate(1px, -1px);
+    }
+
+    100% {
+        transform: translate(1px, 2px);
+    }
+}

@@ -41,27 +41,239 @@
         .btn:disabled {
             background-color: #ccc;
         }
+
+        .barra-de-vida {
+            width: 100px;
+            height: 15px;
+            background-color: #ddd;
+            border: 1px solid #333;
+            position: relative;
+        }
+
+        .vida {
+            height: 100%;
+            background-color: green;
+            width: 100%;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+        }
     </style>
 </head>
 
 <body>
     <h1>Batalha de Heróis</h1>
 
-    <div class="heroi">
-        <h2>Herói 1: <span id="heroi1Nome">Arus</span></h2>
-        <p>Nível: <span id="heroi1Level">20</span> | Vida: <span id="heroi1Vida">100</span></p>
-    </div>
+    <div class="container">
+        <div class="heroi" id="heroi1">
+            <img id="avatarHeroi1" src="imagens" alt="Avatar Heroi 1" class="avatar">
+            <p>Nome: <span id="heroi1Nome">Arus</span></p>
+            <p>Vocação: <span id="heroi1Vocacao">Knight</span></p>
+            <p>Vida: <span id="heroi1Vida">100</span></p>
+            <div class="barra-de-vida">
+                <div id="barraVidaHeroi1" class="vida" style="width: 100%;"></div>
+            </div>
+        </div>
 
-    <div class="heroi">
-        <h2>Herói 2: <span id="heroi2Nome">Zyra</span></h2>
-        <p>Nível: <span id="heroi2Level">18</span> | Vida: <span id="heroi2Vida">80</span></p>
+        <div class="heroi" id="heroi2">
+            <img id="avatarHeroi2" src="imagens" alt="Avatar Heroi 2" class="avatar">
+            <p>Nome: <span id="heroi2Nome">Zyra</span></p>
+            <p>Vocação: <span id="heroi2Vocacao">Sorcerer</span></p>
+            <p>Vida: <span id="heroi2Vida">100</span></p>
+            <div class="barra-de-vida">
+                <div id="barraVidaHeroi2" class="vida" style="width: 100%;"></div>
+            </div>
+        </div>
     </div>
 
     <button id="iniciarBatalha" class="btn">Iniciar Batalha</button>
 
     <div id="log"></div>
 
-    <script src="script.js"></script>
+    <script>
+        class Heroi {
+            constructor(nome, level, vocacao, vida) {
+                this.nome = nome;
+                this.level = level;
+                this.vocacao = vocacao;
+                this.vida = vida;
+            }
+
+            atacar() {
+                let ataque;
+                let dano;
+
+                switch (this.vocacao) {
+                    case "sorcerer":
+                        ataque = "magia de fogo";
+                        dano = Math.floor(Math.random() * 11) + 15;
+                        break;
+                    case "knight":
+                        ataque = "espada";
+                        dano = Math.floor(Math.random() * 11) + 20;
+                        break;
+                    case "druid":
+                        ataque = "magia de gelo";
+                        dano = Math.floor(Math.random() * 11) + 10;
+                        break;
+                    case "paladin":
+                        ataque = "arco e flecha";
+                        dano = Math.floor(Math.random() * 11) + 18;
+                        break;
+                    default:
+                        ataque = "fez um ataque básico";
+                        dano = Math.floor(Math.random() * 11) + 5;
+                }
+
+                log(`${this.nome} atacou usando ${ataque} e causou ${dano} de dano!`);
+                return dano;
+            }
+
+            receberDano(dano) {
+                this.vida -= dano;
+                log(`${this.nome} recebeu ${dano} de dano. Vida restante: ${this.vida}`);
+
+                if (this.vida <= 0) {
+                    log(`${this.nome} foi derrotado!`);
+                    return true; // Herói derrotado
+                }
+                return false;
+            }
+
+            curar() {
+                let cura;
+
+                switch (this.vocacao) {
+                    case "druid":
+                        cura = Math.floor(Math.random() * 11) + 20;
+                        break;
+                    case "sorcerer":
+                        cura = Math.floor(Math.random() * 11) + 15;
+                        break;
+                    default:
+                        cura = Math.floor(Math.random() * 11) + 10;
+                }
+
+                this.vida += cura;
+                log(`${this.nome} se curou e recuperou ${cura} de vida! Vida atual: ${this.vida}`);
+            }
+        }
+
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            logDiv.innerHTML += `<p>${message}</p>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function gerarVocacaoAleatoria() {
+            const vocacoes = ["knight", "sorcerer", "druid", "paladin"];
+            return vocacoes[Math.floor(Math.random() * vocacoes.length)];
+        }
+
+        function atualizarStatus(heroi1, heroi2) {
+            document.getElementById('heroi1Vida').textContent = heroi1.vida;
+            document.getElementById('heroi2Vida').textContent = heroi2.vida;
+            atualizarBarraDeVida('Heroi1', heroi1.vida);
+            atualizarBarraDeVida('Heroi2', heroi2.vida);
+        }
+
+        function atualizarBarraDeVida(heroi, vida) {
+            const barra = document.getElementById(`barraVida${heroi}`);
+            const vidaPercentual = (vida / 100) * 100;
+            barra.style.width = `${vidaPercentual}%`;
+        }
+
+        function atualizarAvatar(heroi, vocacao) {
+            const avatar = document.getElementById(`avatar${heroi}`);
+            let caminhoImagem;
+
+            switch (vocacao) {
+                case "knight":
+                    caminhoImagem = "imagens/knight.png";
+                    break;
+                case "sorcerer":
+                    caminhoImagem = "imagens/sorcerer.png";
+                    break;
+                case "druid":
+                    caminhoImagem = "imagens/druid.png";
+                    break;
+                case "paladin":
+                    caminhoImagem = "imagens/paladin.png";
+                    break;
+                default:
+                    caminhoImagem = "imagens/default.png";
+            }
+
+            avatar.src = caminhoImagem;
+        }
+
+        function iniciarBatalha() {
+            // Criação dos heróis com vida cheia
+            const heroi1 = new Heroi("Arus", 1, gerarVocacaoAleatoria(), 100);
+            const heroi2 = new Heroi("Zyra", 1, gerarVocacaoAleatoria(), 100);
+
+            // Atualiza os dados na interface
+            document.getElementById('heroi1Nome').textContent = heroi1.nome;
+            document.getElementById('heroi2Nome').textContent = heroi2.nome;
+
+            document.getElementById('heroi1Vocacao').textContent = heroi1.vocacao;
+            document.getElementById('heroi2Vocacao').textContent = heroi2.vocacao;
+
+            atualizarAvatar('Heroi1', heroi1.vocacao);
+            atualizarAvatar('Heroi2', heroi2.vocacao);
+
+            // Reseta o log e a vida dos heróis
+            const logDiv = document.getElementById('log');
+            logDiv.innerHTML = '';
+
+            atualizarStatus(heroi1, heroi2);
+
+            let batalhaAtiva = true; // Variável para controlar o status da batalha
+
+            const loopBatalha = setInterval(() => {
+                if (!batalhaAtiva) {
+                    clearInterval(loopBatalha);
+                    return; // Sai do loop se a batalha não estiver mais ativa
+                }
+
+                let dano1 = heroi1.atacar();
+                let heroi2Derrotado = heroi2.receberDano(dano1);
+                atualizarStatus(heroi1, heroi2);
+
+                if (heroi2Derrotado) {
+                    batalhaAtiva = false; // Define batalha como inativa
+                    clearInterval(loopBatalha);
+                    log("Batalha encerrada! Clique para reiniciar.");
+                    document.getElementById('iniciarBatalha').disabled = false; // Habilita o botão para reiniciar
+                    return;
+                }
+
+                let dano2 = heroi2.atacar();
+                let heroi1Derrotado = heroi1.receberDano(dano2);
+                atualizarStatus(heroi1, heroi2);
+
+                if (heroi1Derrotado) {
+                    batalhaAtiva = false; // Define batalha como inativa
+                    clearInterval(loopBatalha);
+                    log("Batalha encerrada! Clique para reiniciar.");
+                    document.getElementById('iniciarBatalha').disabled = false; // Habilita o botão para reiniciar
+                }
+            }, 1000);
+
+            document.getElementById('iniciarBatalha').disabled = true; // Desabilita o botão durante a batalha
+        }
+
+        document.getElementById('iniciarBatalha').addEventListener('click', iniciarBatalha);
+    </script>
 </body>
 
 </html>

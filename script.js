@@ -1,4 +1,3 @@
-// Classe Heroi representando os personagens da aventura
 class Heroi {
     constructor(nome, level, vocacao, vida) {
         this.nome = nome;
@@ -7,7 +6,6 @@ class Heroi {
         this.vida = vida;
     }
 
-    // Método atacar, com base na vocação do herói
     atacar() {
         let ataque;
         let dano;
@@ -38,7 +36,6 @@ class Heroi {
         return dano;
     }
 
-    // Método para receber dano
     receberDano(dano) {
         this.vida -= dano;
         log(`${this.nome} recebeu ${dano} de dano. Vida restante: ${this.vida}`);
@@ -50,14 +47,12 @@ class Heroi {
         return false;
     }
 
-    // Método para subir de nível
     subirNivel() {
         this.level += 1;
         this.vida += 10; // Ganha mais vida ao subir de nível
         log(`${this.nome} subiu para o nível ${this.level}! Vida aumentou para ${this.vida}`);
     }
 
-    // Método para curar o herói
     curar() {
         let cura;
 
@@ -84,78 +79,90 @@ function log(message) {
     logDiv.scrollTop = logDiv.scrollHeight; // Rolagem automática para o final
 }
 
+// Função para gerar uma vocação aleatória
+function gerarVocacaoAleatoria() {
+    const vocacoes = ["knight", "sorcerer", "druid", "paladin"];
+    const vocacaoAleatoria = vocacoes[Math.floor(Math.random() * vocacoes.length)];
+    return vocacaoAleatoria;
+}
+
 // Função para atualizar o status dos heróis na interface
 function atualizarStatus(heroi1, heroi2) {
     document.getElementById('heroi1Vida').textContent = heroi1.vida;
     document.getElementById('heroi2Vida').textContent = heroi2.vida;
+    atualizarBarraDeVida('Heroi1', heroi1.vida);
+    atualizarBarraDeVida('Heroi2', heroi2.vida);
 }
 
-// Função para escolher uma vocação aleatória
-function escolherVocacaoAleatoria() {
-    const vocacoes = ["knight", "sorcerer", "druid", "paladin"];
-    return vocacoes[Math.floor(Math.random() * vocacoes.length)];
+// Função para atualizar as barras de vida
+function atualizarBarraDeVida(heroi, vida) {
+    const barra = document.getElementById(`barraVida${heroi}`);
+    const vidaPercentual = (vida / 100) * 100; // Calcule a porcentagem
+    barra.style.width = `${vidaPercentual}%`; // Atualiza a largura da barra
 }
 
-// Função para criar dois heróis aleatórios com vocações diferentes
-function criarHeroisAleatorios() {
-    let vocacao1 = escolherVocacaoAleatoria();
-    let vocacao2;
+// Função para atualizar o avatar de acordo com a vocação
+function atualizarAvatar(heroi, vocacao) {
+    const avatar = document.getElementById(`avatar${heroi}`);
+    let caminhoImagem;
 
-    // Garante que os dois heróis tenham vocações diferentes
-    do {
-        vocacao2 = escolherVocacaoAleatoria();
-    } while (vocacao1 === vocacao2);
+    switch (vocacao) {
+        case "knight":
+            caminhoImagem = "imagens/knight.png";
+            break;
+        case "sorcerer":
+            caminhoImagem = "imagens/sorcerer.png";
+            break;
+        case "druid":
+            caminhoImagem = "imagens/druid.png";
+            break;
+        case "paladin":
+            caminhoImagem = "imagens/paladin.png";
+            break;
+        default:
+            caminhoImagem = "imagens/default.png"; // Imagem padrão caso algo dê errado
+    }
 
-    const heroi1 = new Heroi("Arus", Math.floor(Math.random() * 10) + 15, vocacao1, 100);
-    const heroi2 = new Heroi("Zyra", Math.floor(Math.random() * 10) + 15, vocacao2, 100);
-
-    log(`Heróis selecionados aleatoriamente: ${heroi1.nome} (${heroi1.vocacao}) vs ${heroi2.nome} (${heroi2.vocacao})`);
-    return { heroi1, heroi2 };
+    avatar.src = caminhoImagem; // Atualiza a imagem do avatar
 }
 
 // Função para iniciar a batalha
 function iniciarBatalha() {
-    const { heroi1, heroi2 } = criarHeroisAleatorios(); // Cria heróis aleatórios
-    let rodada = 1;
+    // Definindo vocações aleatórias para cada herói
+    const vocacaoAleatoriaHeroi1 = gerarVocacaoAleatoria();
+    const vocacaoAleatoriaHeroi2 = gerarVocacaoAleatoria();
 
-    log(`Iniciando a batalha entre ${heroi1.nome} e ${heroi2.nome}!`);
+    // Criando heróis com vocações aleatórias
+    const heroi1 = new Heroi("Arus", 1, vocacaoAleatoriaHeroi1, 100);
+    const heroi2 = new Heroi("Zyra", 1, vocacaoAleatoriaHeroi2, 100);
 
-    const batalhaInterval = setInterval(() => {
-        log(`--- Rodada ${rodada} ---`);
+    // Atualizando os nomes e vocações na interface
+    document.getElementById('heroi1Nome').textContent = `${heroi1.nome} (${heroi1.vocacao})`;
+    document.getElementById('heroi2Nome').textContent = `${heroi2.nome} (${heroi2.vocacao})`;
 
-        // Heroi 1 ataca Heroi 2
-        let dano = heroi1.atacar();
-        if (heroi2.receberDano(dano)) {
-            log(`${heroi1.nome} venceu a batalha!`);
-            heroi1.subirNivel();
-            clearInterval(batalhaInterval); // Para a batalha
-            document.getElementById('iniciarBatalha').disabled = false;
+    // Atualizando as imagens dos avatares
+    atualizarAvatar('Heroi1', vocacaoAleatoriaHeroi1);
+    atualizarAvatar('Heroi2', vocacaoAleatoriaHeroi2);
+
+    // Iniciando a batalha
+    let batalha = setInterval(() => {
+        let dano1 = heroi1.atacar();
+        if (heroi2.receberDano(dano1)) {
+            clearInterval(batalha);
             return;
         }
 
-        // Heroi 2 ataca Heroi 1
-        dano = heroi2.atacar();
-        if (heroi1.receberDano(dano)) {
-            log(`${heroi2.nome} venceu a batalha!`);
-            heroi2.subirNivel();
-            clearInterval(batalhaInterval); // Para a batalha
-            document.getElementById('iniciarBatalha').disabled = false;
+        atualizarStatus(heroi1, heroi2); // Atualiza status após o ataque
+
+        let dano2 = heroi2.atacar();
+        if (heroi1.receberDano(dano2)) {
+            clearInterval(batalha);
             return;
         }
 
-        // Heroi 2 se cura na rodada ímpar
-        if (rodada % 2 === 1) {
-            heroi2.curar();
-        }
-
-        atualizarStatus(heroi1, heroi2);
-        rodada += 1;
-    }, 1500);
+        atualizarStatus(heroi1, heroi2); // Atualiza status após o ataque
+    }, 1000);
 }
 
-// Event listener para o botão de iniciar a batalha
-document.getElementById('iniciarBatalha').addEventListener('click', () => {
-    document.getElementById('iniciarBatalha').disabled = true; // Desativa o botão durante a batalha
-    document.getElementById('log').innerHTML = ''; // Limpa o log
-    iniciarBatalha();
-});
+// Evento de clique para iniciar a batalha
+document.getElementById('iniciarBatalha').addEventListener('click', iniciarBatalha);
